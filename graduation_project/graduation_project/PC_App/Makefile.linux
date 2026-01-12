@@ -1,0 +1,32 @@
+# STM32 Sensor Monitor - Linux SDL2 Build
+# Requires: SDL2 and SDL2_ttf development libraries
+
+CC = gcc
+CFLAGS = -Wall -O2 -D_GNU_SOURCE `sdl2-config --cflags`
+LDFLAGS = `sdl2-config --libs` -lSDL2_ttf -lpthread -lm
+
+TARGET = sensor_monitor
+SRC = sensor_monitor_sdl.c
+
+all: $(TARGET)
+
+$(TARGET): $(SRC)
+	$(CC) $(CFLAGS) -o $(TARGET) $(SRC) $(LDFLAGS)
+
+clean:
+	rm -f $(TARGET)
+
+run: $(TARGET)
+	./$(TARGET)
+
+# Install dependencies (Ubuntu/Debian)
+install-deps:
+	sudo apt-get update
+	sudo apt-get install -y libsdl2-dev libsdl2-ttf-dev fonts-dejavu-core
+
+# Add user to dialout group for serial port access
+setup-serial:
+	sudo usermod -a -G dialout $(USER)
+	@echo "Log out and log back in for changes to take effect"
+
+.PHONY: all clean run install-deps setup-serial
